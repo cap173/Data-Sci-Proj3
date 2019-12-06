@@ -19,15 +19,27 @@ def createPerWhiteVar2000(census2000):
     #census2000.dropna( axis='columns' )
     census2000 = census2000.drop( census2000.index[59] )
     
-    census2000['%WHITE'] = census2000['WHITE'] / census2000['TOTAL']
-    census2000['%WHITE'] = census2000['%WHITE'].round( decimals=3 )
+    census2000['%WHITE'] = census2000['WHITE'] / census2000['TOTAL'].round( decimals=3 )
 
     return census2000
  
 def createPerWhiteVar2010( census2010 ):    
-    # Create variable for census2010 data
+    # Create %WHITE variable for census2010 data
     census2010['%WHITE'] = census2010['Total Non-Minority Population (White Not Hispanic)'] / census2010['Total Population'].round(decimals=3)
     return census2010 
+
+def createPerBlackVar2000(census2000):
+    # Crete %BLACK variable for census2000 data
+    census2000['%BLACK'] = (census2000['BLACK'] / census2000['TOTAL']).round(decimals=3)
+    
+    return census2000
+
+def createPerBlackVar2010(census2010):
+    # Crete %BLACK variable for census2010 data
+    census2010['%BLACK'] = ((census2010['Pop of 1 race: Black'] + census2010['Pop 2 or more races: Black and'])
+        / census2010['Total Population']).round(decimals=3)
+    
+    return census2010
 
 # Creates first plotly graph which will be a double bar chart of mean income
 # in each clusters in the years 2000 and 2010.
@@ -214,20 +226,136 @@ def vis4(permits2018):
     # Display the scatterplot
     py.plot(myFigure, filename='2018 Permits Pie Chart')    
     
+def vis5(census2000):
+    # Create trace with x-axis as % white and y-axis as median income
+    trace = go.Scatter(
+	x = census2000['%WHITE'],
+	y = census2000['FAGI_MEDIAN_2005'],
+    hovertext = census2000['NEIGHBORHOODCLUSTER'],
+	mode = 'markers'
+    )
+
+    # Assign it to an trace object named myData
+    myData = [trace]
+
+    # Add axis and title
+    myLayout = go.Layout(
+	title = "Relationship Between Population of White People and Income in 2005",
+	xaxis=dict(
+		title = 'Population of White People in Tract'
+	),
+	yaxis=dict(
+		title = 'Median Income (USD)'
+           )
+    )
+
+    # Setup figure
+    myFigure = go.Figure(data=myData, layout=myLayout)
+
+    # Display the scatterplot
+    py.plot(myFigure, filename='2005 ScatterPlot')
+    
+def vis6(census2010):
+    # Create trace with x-axis as % white and y-axis as median income
+    trace = go.Scatter(
+	x = census2010['%WHITE'],
+	y = census2010['FAGI_MEDIAN_2015'],
+    hovertext = census2010['NEIGHBORHOODCLUSTER'],
+	mode = 'markers'
+    )
+
+    # Assign it to an trace object named myData
+    myData = [trace]
+
+    # Add axis and title
+    myLayout = go.Layout(
+	title = "Relationship Between Population of White People and Income in 2015",
+	xaxis=dict(
+		title = 'Population of White People in Tract'
+	),
+	yaxis=dict(
+		title = 'Median Income (USD)'
+           )
+    )
+
+    # Setup figure
+    myFigure = go.Figure(data=myData, layout=myLayout)
+
+    # Display the scatterplot
+    py.plot(myFigure, filename='2015 ScatterPlot')
+    
+
+def vis7(census2000, census2010):
+    # Create new variable %BLACK in datasets
+    census2000 = createPerBlackVar2000(census2000)
+    census2010 = createPerBlackVar2010(census2010)
+    
+    # List for x-axis: difference in %BLACK between 2000 and 2010,
+    # and y-axis: neighborhood cluster.
+    x_cluster = []
+    y_diff = []
+    
+    for x in range(1,40):
+        # Get all rows in census2000 dataframe where the cluster is equal to x 
+        clusterRows = census2000.loc[census2000['NEIGHBORHOODCLUSTER'] == x]
+        # Find the mean income of all the tracts in that cluster 
+        avg2000 = round(clusterRows['%BLACK'].mean(), 2)
+
+        
+        # Get all rows in census2010 dataframe where the cluster is equal to x 
+        clusterRows = census2010.loc[census2010['NEIGHBORHOODCLUSTER'] == x]
+        # Find the mean income of all the tracts in that cluster 
+        avg2010 = round(clusterRows['%BLACK'].mean(), 2)
+    
+        y_diff.append((avg2010 - avg2000))
+        x_cluster.append(x)
+        
+    
+    # Create trace for  data
+    trace = go.Bar(
+            x = x_cluster,
+            y = y_diff,
+            name='Change in Population of Black People in Clusters Between 2000 and 2010'
+            )
+    
+    # Assign data to trace objects named myData
+    myData = [trace]
+
+    # Add axis and title
+    myLayout = go.Layout(
+	title = "Change in Population of Black People in Clusters Between 2000 and 2010",
+	xaxis=dict(
+		title = 'Neighborhood Cluster'
+	    ),
+	yaxis=dict(
+		title = 'Change in Population'
+          )
+    )
+
+    # Setup figure
+    myFigure = go.Figure(data=myData, layout=myLayout)
+
+    # Display the scatterplot
+    py.plot(myFigure, filename='Black Pop Bar')
+
+
 
 def main(): 
     # Open all csvs and get pandas dataframe of the data. 
     census2000 = getCensus2000()
     census2000 = createPerWhiteVar2000( census2000 )
     census2010 = getCensus2010()
-    createPerWhiteVar2010( census2010 )
+    census2010 = createPerWhiteVar2010( census2010 )
     permits2010 = getPermits2010()
     permits2018 = getPermits2018()
     
-    #vis1(census2000, census2010)
-    #vis2(census2000, census2010)
+    vis1(census2000, census2010)
+    vis2(census2000, census2010)
     vis3(permits2010)
     vis4(permits2018)
+    vis5(census2000)
+    vis6(census2010)
+    vis7(census2000, census2010)
 
 if __name__ == "__main__":
     main()
