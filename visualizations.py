@@ -380,7 +380,8 @@ def vis8(permits2018):
     # Add title
     myLayout = go.Layout(
         title="Average Fees Paid of Construction Permits Filed in DC Clusters in 2018",
-        yaxis=dict(nticks=4, range=[0, 7000])
+        xaxis=dict(title="Clusters"),
+        yaxis=dict(title= "US Dollars", nticks=4, range=[0, 7000])
     )
 
     # Assign data to appropriate axis on heatmap
@@ -388,7 +389,6 @@ def vis8(permits2018):
         x=clusterLabels,
         y=clusterValues,
         name='Average Fees Paid 2018'
-
     )
 
     # Setup figure
@@ -424,7 +424,8 @@ def vis9(permits2010):
     # Add title
     myLayout = go.Layout(
         title="Average Fees Paid of Construction Permits Filed in DC Clusters in 2010",
-        yaxis=dict(nticks=4, range=[0, 7000])
+        xaxis=dict(title="Clusters"),
+        yaxis=dict(title= "US Dollars", nticks=4, range=[0, 7000])
     )
 
     # Assign data to appropriate axis on bar graph
