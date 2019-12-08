@@ -5,6 +5,7 @@ import plotly.graph_objs as go
 import numpy as np
 # All get data frame functions can be found in utilities.py
 import utilities
+from statistics import mean
 
 # Credentials to send plotly graphs to my account 
 chart_studio.tools.set_credentials_file(username='chrisp45', api_key='n1f5Z2OhEwVm9jUEgUxJ')
@@ -49,6 +50,10 @@ def vis1(census2000, census2010):
     # The Y-axis will be the average income for each cluster in the years 2005 and 2015
     y_axis_2000 = []
     y_axis_2010 = []
+
+    # Lists that will hold change in in come of clusters East and West of the Anacostia 
+    diff_West = []
+    diff_East = []
     
     for x in range(1,40):
         # Get all rows in census2000 dataframe where the cluster is equal to x 
@@ -67,6 +72,10 @@ def vis1(census2000, census2010):
         
         # Add value of x to X-axis list 
         x_axis.append(x)
+	
+    # Display average growth of the West and East side
+    print('Average change West of the Anacostia:', round(mean(diff_West), 2))
+    print('Average change East of the Anacostia:', round(mean(diff_East), 2))
 
     # Create trace for 2000 data        
     trace2000 = go.Bar(
