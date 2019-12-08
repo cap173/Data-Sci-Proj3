@@ -59,19 +59,26 @@ def vis1(census2000, census2010):
         # Get all rows in census2000 dataframe where the cluster is equal to x 
         clusterRows = census2000.loc[census2000['NEIGHBORHOODCLUSTER'] == x]
         # Find the mean income of all the tracts in that cluster 
-        avg = round(clusterRows['FAGI_MEDIAN_2005'].mean(), 2)
+        avg2000 = round(clusterRows['FAGI_MEDIAN_2005'].mean(), 2)
         # Add it to the Y-axis list
-        y_axis_2000.append(avg)
+        y_axis_2000.append(avg2000)
         
         # Get all rows in census2010 dataframe where the cluster is equal to x 
         clusterRows = census2010.loc[census2010['NEIGHBORHOODCLUSTER'] == x]
         # Find the mean income of all the tracts in that cluster 
-        avg = round(clusterRows['FAGI_MEDIAN_2015'].mean(), 2)
+        avg2010 = round(clusterRows['FAGI_MEDIAN_2015'].mean(), 2)
         # Add it to the Y-axis list
-        y_axis_2010.append(avg)
+        y_axis_2010.append(avg2010)
         
         # Add value of x to X-axis list 
         x_axis.append(x)
+        
+        if x < 28:
+            diff_West.append(avg2010-avg2000)
+        elif x == 29:
+            diff_East.append(0)
+        else:
+            diff_East.append(avg2010-avg2000)
 	
     # Display average growth of the West and East side
     print('Average change West of the Anacostia:', round(mean(diff_West), 2))
@@ -413,8 +420,6 @@ def vis9(permits2010):
         # Add value of x to labels list
         clusterLabels.append(x)
 
-    print(clusterValues)
-    print(clusterLabels)
 
     # Add title
     myLayout = go.Layout(
