@@ -8,7 +8,7 @@ from sklearn.decomposition import LatentDirichletAllocation as LDA
 from wordcloud import WordCloud
 # All get data frame functions can be found in utilities.py
 import utilities
- 
+
 '''
 --- Helper Functions ---
 '''
@@ -27,17 +27,17 @@ def wordcloud_permit_text(permits, year):
 def LDA_find_top_topics(permits):
     # use english stop words in vectorizer
     count_vectorizer = CountVectorizer(stop_words='english')
-    
+
     # transform descriptions
     count_data = count_vectorizer.fit_transform(permits['DESC_OF_WORK'])
-    
+
     number_topics = 5
     number_words = 10
-    
+
     # create/fit model
     lda = LDA(n_components=number_topics)
     lda.fit(count_data)
-    
+
     # print topics found...
     print("Topics found via LDA:")
     print_topics(lda, count_vectorizer, number_words)
@@ -49,13 +49,13 @@ def print_topics(model, count_vectorizer, n_top_words):
         print("\nTopic #%d:" % topic_idx)
         print(" ".join([words[i]
                         for i in topic.argsort()[:-n_top_words - 1:-1]]))
-    
+
 def remove_punctuations(text):
     text = str(text)
     for punctuation in string.punctuation:
         text = text.replace(punctuation, '')
     return text
-    
+
 # get and clean up permit text further
 def get_clean_permit_text(year):
     # Read data into permits
@@ -63,14 +63,15 @@ def get_clean_permit_text(year):
         permits = utilities.getPermits2018()
     if year == 2010:
         permits = utilities.getPermits2010()
-        
+
     permits.dropna(subset=['DESC_OF_WORK'], inplace=True)
+    permits[~permits['DESC_OF_WORK'].str.contains('online')]
     permits['DESC_OF_WORK'] = permits['DESC_OF_WORK'].apply(remove_punctuations)
     permits['DESC_OF_WORK'] = permits['DESC_OF_WORK'].map(lambda x: x.lower())
     return permits
 
 
-def main(): 
+def main():
     permits2010 = get_clean_permit_text(2010)
     permits2018 = get_clean_permit_text(2018)
     print('--- 2010 ---')
@@ -82,7 +83,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
