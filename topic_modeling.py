@@ -1,4 +1,5 @@
 # Importing modules
+import pandas as pd
 import string
 # import libraries from sk-learn for LDA model
 from sklearn.feature_extraction.text import CountVectorizer
@@ -62,12 +63,8 @@ def get_clean_permit_text(year):
         permits = utilities.getPermits2018()
     if year == 2010:
         permits = utilities.getPermits2010()
-
-    # only keep relevant columns
-    permits = permits[['OBJECTID', 'PERMIT_ID', 'PERMIT_TYPE_NAME' ,'DESC_OF_WORK', 'NEIGHBORHOODCLUSTER', 'FEES_PAID', 'OWNER_NAME', 'FEE_TYPE', 'PERMIT_APPLICANT', 'PERMIT_SUBTYPE_NAME']]
-
-    # remove rows with 'nan' and punctuation then convert to lower case
-    permits.drop(permits[permits['DESC_OF_WORK'] == 'nan'].index, inplace=True)
+        
+    permits.dropna(subset=['DESC_OF_WORK'], inplace=True)
     permits['DESC_OF_WORK'] = permits['DESC_OF_WORK'].apply(remove_punctuations)
     permits['DESC_OF_WORK'] = permits['DESC_OF_WORK'].map(lambda x: x.lower())
     return permits
