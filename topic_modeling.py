@@ -12,14 +12,15 @@ import utilities
 --- Helper Functions ---
 '''
 # prints Wordcloud of permit text
-def wordcloud_permit_text(permits):
+def wordcloud_permit_text(permits, year):
     # join permit text together
     long_string = ','.join(list(permits['DESC_OF_WORK'].values))
     # create word cloud
-    wordcloud = WordCloud(background_color="white", max_words=100, contour_width=3, w='firebrick')
+    wordcloud = WordCloud(background_color="white", max_words=100, contour_width=3, contour_color='firebrick')
     # create visual
     wordcloud.generate(long_string)
-    wordcloud.to_image()
+    image = wordcloud.to_image()
+    wordcloud.to_file('permits_wordcloud_' + str(year) + '.PNG')
 
 # Finds top topics in LDA
 def LDA_find_top_topics(permits):
@@ -76,10 +77,10 @@ def main():
     permits2010 = get_clean_permit_text(2010)
     permits2018 = get_clean_permit_text(2018)
     print('--- 2010 ---')
-    wordcloud_permit_text(permits2010)
+    wordcloud_permit_text(permits2010, 2010)
     LDA_find_top_topics(permits2010)
     print('--- 2018 ---')
-    wordcloud_permit_text(permits2018)
+    wordcloud_permit_text(permits2018, 2018)
     LDA_find_top_topics(permits2018)
 
 if __name__ == "__main__":
