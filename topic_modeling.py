@@ -1,6 +1,5 @@
 # Importing modules
-# regex library
-import re
+import string
 # import libraries from sk-learn for LDA model
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation as LDA
@@ -12,7 +11,6 @@ import utilities
 '''
 --- Helper Functions ---
 '''
-
 # prints Wordcloud of permit text
 def wordcloud_permit_text(permits):
     # join permit text together
@@ -49,7 +47,13 @@ def print_topics(model, count_vectorizer, n_top_words):
         print("\nTopic #%d:" % topic_idx)
         print(" ".join([words[i]
                         for i in topic.argsort()[:-n_top_words - 1:-1]]))
-
+    
+def remove_punctuations(text):
+    text = str(text)
+    for punctuation in string.punctuation:
+        text = text.replace(punctuation, '')
+    return text
+    
 # get and clean up permit text further
 def get_clean_permit_text(year):
     # Read data into permits
@@ -60,10 +64,10 @@ def get_clean_permit_text(year):
 
     # only keep relevant columns
     permits = permits[['OBJECTID', 'PERMIT_ID', 'PERMIT_TYPE_NAME' ,'DESC_OF_WORK', 'NEIGHBORHOODCLUSTER', 'FEES_PAID', 'OWNER_NAME', 'FEE_TYPE', 'PERMIT_APPLICANT', 'PERMIT_SUBTYPE_NAME']]
-    
+
     # remove rows with 'nan' and punctuation then convert to lower case
     permits.drop(permits[permits['DESC_OF_WORK'] == 'nan'].index, inplace=True)
-    permits['DESC_OF_WORK'] = permits['DESC_OF_WORK'].map(lambda x: re.sub('[,\.!?]', '', x))
+    permits['DESC_OF_WORK'] = permits['DESC_OF_WORK'].apply(remove_punctuations)
     permits['DESC_OF_WORK'] = permits['DESC_OF_WORK'].map(lambda x: x.lower())
     return permits
 
