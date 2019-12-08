@@ -339,15 +339,104 @@ def vis7(census2000, census2010):
     py.plot(myFigure, filename='Black Pop Bar')
 
 
+def vis8(permits2018):
+    # Get all rows where permit type is Construction
+    constPermits = permits2018.loc[permits2018['PERMIT_TYPE_NAME'] == 'CONSTRUCTION']
+    # The labels will be the cluser numbers (1-39)
+    clusterLabels = []
+    # The values will be the count permits in each cluster
+    clusterValues = []
+
+    for x in range(1, 40):
+        # Get all rows in permits2010 dataframe where the cluster is equal to x
+        clusterRows = constPermits.loc[constPermits['NEIGHBORHOODCLUSTER'] == x]
+        clusterRows = clusterRows.dropna()
+
+        # Finds the average amount of fees paid per cluster
+        avg_fp = sum(clusterRows['FEES_PAID']) / len(clusterRows)
+
+        # Add it to the values list
+        clusterValues.append(avg_fp)
+
+        # Add value of x to labels list
+        clusterLabels.append(x)
+
+    # Add title
+    myLayout = go.Layout(
+        title="Average Fees Paid of Construction Permits Filed in DC Clusters in 2018",
+        yaxis=dict(nticks=4, range=[0, 7000])
+    )
+
+    # Assign data to appropriate axis on heatmap
+    myData = go.Bar(
+        x=clusterLabels,
+        y=clusterValues,
+        name='Average Fees Paid 2018'
+
+    )
+
+    # Setup figure
+    myFigure = go.Figure(data=myData, layout=myLayout)
+
+    # Display the bar graph
+    py.plot(myFigure, filename='2018 Permits Fees Bar Graph')
+
+
+def vis9(permits2010):
+    # Get all rows where permit type is Construction
+    constPermits = permits2010.loc[permits2010['PERMIT_TYPE_NAME'] == 'CONSTRUCTION']
+    # The labels will be the cluster numbers (1-39)
+    clusterLabels = []
+    # The values will be the count permits in each cluster
+    clusterValues = []
+
+    for x in range(1, 40):
+        # Get all rows in permits2010 dataframe where the cluster is equal to x
+        clusterRows = constPermits.loc[constPermits['NEIGHBORHOODCLUSTER'] == x]
+        clusterRows = clusterRows.dropna()
+
+        # Finds the average amount of fees paid per cluster
+        avg_fp = sum(clusterRows['FEES_PAID']) / len(clusterRows)
+
+        # Add it to the values list
+        clusterValues.append(avg_fp)
+
+        # Add value of x to labels list
+        clusterLabels.append(x)
+
+    print(clusterValues)
+    print(clusterLabels)
+
+    # Add title
+    myLayout = go.Layout(
+        title="Average Fees Paid of Construction Permits Filed in DC Clusters in 2010",
+        yaxis=dict(nticks=4, range=[0, 7000])
+    )
+
+    # Assign data to appropriate axis on bar graph
+    myData = go.Bar(
+        x=clusterLabels,
+        y=clusterValues,
+        name='Average Fees Paid 2010'
+
+    )
+
+    # Setup figure
+    myFigure = go.Figure(data=myData, layout=myLayout)
+
+    # Display the bar graph
+    py.plot(myFigure, filename='2010 Permits Fees Bar Graph')
+
+
 
 def main(): 
     # Open all csvs and get pandas dataframe of the data. 
-    census2000 = getCensus2000()
+    census2000 = utilities.getCensus2000()
     census2000 = createPerWhiteVar2000( census2000 )
-    census2010 = getCensus2010()
+    census2010 = utilities.getCensus2010()
     census2010 = createPerWhiteVar2010( census2010 )
-    permits2010 = getPermits2010()
-    permits2018 = getPermits2018()
+    permits2010 = utilities.getPermits2010()
+    permits2018 = utilities.getPermits2018()
     
     vis1(census2000, census2010)
     vis2(census2000, census2010)
@@ -356,6 +445,8 @@ def main():
     vis5(census2000)
     vis6(census2010)
     vis7(census2000, census2010)
+    vis8(permits2018)
+    vis9(permits2010)
 
 if __name__ == "__main__":
     main()
