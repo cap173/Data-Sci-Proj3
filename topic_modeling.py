@@ -17,7 +17,7 @@ def wordcloud_permit_text(permits, year):
     # join permit text together
     long_string = ','.join(list(permits['DESC_OF_WORK'].values))
     # create word cloud
-    wordcloud = WordCloud(background_color="white", max_words=100, contour_width=3, contour_color='firebrick')
+    wordcloud = WordCloud(width=1600, height=800, background_color="white", max_words=100, contour_width=3, contour_color='firebrick')
     # create visual
     wordcloud.generate(long_string)
     image = wordcloud.to_image()
